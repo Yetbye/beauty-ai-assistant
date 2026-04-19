@@ -411,22 +411,11 @@
       </transition>
     </section>
 
-    <!-- 相机弹窗 -->
-    <div class="camera-modal" v-if="showCamera" @click.self="closeCamera">
-      <div class="camera-content">
-        <div class="camera-preview">
-          <div class="camera-placeholder">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="6" width="18" height="12" rx="2"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-            <p>相机功能开发中...</p>
-            <span class="hint">请直接输入文字描述您的问题</span>
-          </div>
-        </div>
-        <button class="close-camera" @click="closeCamera">关闭</button>
-      </div>
-    </div>
+    <!-- 肤质分析相机组件 -->
+    <SkinAnalysisCamera
+      v-model="showCamera"
+      @analysis-complete="handleSkinAnalysis"
+    />
   </div>
 </template>
 
@@ -434,6 +423,7 @@
 import { ref, nextTick, watch, computed } from 'vue'
 import { BLOGGERS } from './agent/bloggers.js'
 import { apiClient } from './agent/api-client.js'
+import SkinAnalysisCamera from './components/SkinAnalysisCamera.vue'
 
 // 状态
 const currentStep = ref('input')
@@ -791,6 +781,23 @@ const restart = () => {
   debateMessages.value = []
   userComment.value = ''
   recommendation.value = null
+}
+
+// 处理肤质分析结果
+const handleSkinAnalysis = (result) => {
+  // 根据分析结果设置肤质类型
+  if (result.skinType) {
+    selectedSkinType.value = result.skinType
+  }
+  
+  // 将分析结果作为用户问题
+  const analysisText = result.description || 
+    `我的肤质是${skinTypeLabels[result.skinType] || '混合肌肤'}，主要问题是${result.problems?.join('、') || '水油不平衡'}，${result.advice || '需要专业建议'}`
+  
+  userInput.value = analysisText
+  
+  // 自动开始分析
+  startAnalysis()
 }
 
 watch(debateMessages, () => {

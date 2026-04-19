@@ -69,6 +69,16 @@ class ApiClient {
       })
     })
   }
+
+  // 肤质分析（多模态）
+  async analyzeSkin(base64Image) {
+    return this.request('/analyze-skin', {
+      method: 'POST',
+      body: JSON.stringify({
+        image: base64Image
+      })
+    })
+  }
 }
 
 export const apiClient = new ApiClient()

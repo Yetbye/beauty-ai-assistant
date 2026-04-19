@@ -2,7 +2,7 @@ export const BLOGGERS = [
   {
     id: 'C001',
     name: '李佳琦Austin',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=lijiaqi',
+    avatar: '/avatars/1.jpg',
     style: 'high_energy_sales',
     persona: 'seller',
     strength_stage: 'decision',
@@ -11,7 +11,7 @@ export const BLOGGERS = [
   {
     id: 'C002',
     name: '老爸评测',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=laoba',
+    avatar: '/avatars/2.png',
     style: 'scientific_rational',
     persona: 'expert',
     strength_stage: 'consideration',
@@ -20,7 +20,7 @@ export const BLOGGERS = [
   {
     id: 'C003',
     name: '胡楚靓',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=huchu',
+    avatar: '/avatars/3.jpg',
     style: 'gentle_professional',
     persona: 'mentor',
     strength_stage: 'consideration',
@@ -29,7 +29,7 @@ export const BLOGGERS = [
   {
     id: 'C004',
     name: '勇仔leo',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=yong',
+    avatar: '/avatars/4.jpg',
     style: 'structured_critical',
     persona: 'coach_friend',
     strength_stage: 'consideration',
@@ -38,7 +38,7 @@ export const BLOGGERS = [
   {
     id: 'C005',
     name: '大茉莉jasmine呀',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=moli',
+    avatar: '/avatars/5.jpg',
     style: 'emotional_excited',
     persona: 'bestie',
     strength_stage: 'awareness',
@@ -47,7 +47,7 @@ export const BLOGGERS = [
   {
     id: 'C006',
     name: '草莓探险家',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=caomei',
+    avatar: '/avatars/6.jpg',
     style: 'authentic_calm',
     persona: 'real_user',
     strength_stage: 'decision',
@@ -56,7 +56,7 @@ export const BLOGGERS = [
   {
     id: 'C007',
     name: '野生芫荽',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=yansui',
+    avatar: '/avatars/7.jpg',
     style: 'aesthetic_calm',
     persona: 'quiet_beauty',
     strength_stage: 'awareness',
