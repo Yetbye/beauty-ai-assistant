@@ -1,8 +1,8 @@
 <template>
-  <div class="camera-modal" @click.self="close">
+  <div v-if="modelValue" class="camera-modal" @click.self="close">
     <div class="camera-container">
       <!-- 关闭按钮 -->
-      <button class="close-btn" @click="close">✕</button>
+      <button class="close-btn" @click.stop="close">✕</button>
 
       <!-- 标题 -->
       <div class="camera-header">
