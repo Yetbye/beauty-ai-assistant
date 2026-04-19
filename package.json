@@ -1,0 +1,23 @@
+{
+  "name": "beauty-ai-assistant",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "server": "cd server && npm start",
+    "dev:all": "concurrently \"npm run server\" \"npm run dev\"",
+    "start": "cd server && npm start",
+    "vercel-build": "npm run build"
+  },
+  "dependencies": {
+    "vue": "^3.4.21"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "concurrently": "^8.2.2",
+    "vite": "^5.2.0"
+  }
+}
