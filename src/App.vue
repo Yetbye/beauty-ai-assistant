@@ -2,6 +2,16 @@
   <div class="app">
     <!-- 首屏 - 输入区域 -->
     <section class="hero-section" v-show="currentStep === 'input'">
+      <!-- 悬浮博主照片墙 -->
+      <div class="floating-avatars">
+        <div class="avatar-scroll">
+          <div class="avatar-track">
+            <img v-for="(blogger, idx) in [...bloggers, ...bloggers]" :key="idx" :src="blogger.avatar" class="float-avatar" :alt="blogger.name" />
+          </div>
+        </div>
+        <div class="avatar-hint">👆 多位美妆博主等你挑选</div>
+      </div>
+
       <header class="header">
         <div class="logo">
           <div class="logo-icon">
@@ -13,14 +23,14 @@
       </header>
 
       <div class="hero-content">
-        <div class="tag">✨ AI 选品新方式</div>
+        <div class="tag">🎙️ AI 美妆直播新体验</div>
         <h2 class="title">
-          有问题？<br />
-          陪你 <span class="gradient-text">辩论</span> 到底
+          辩妆<br />
+          <span class="gradient-text">直播间</span>
         </h2>
         <p class="subtitle">
-          不管是平替还是贵妇，不管是成分还是包装，<br />
-          在这里，我们只说真话。
+          多 Agent 美妆博主分身帮你吵<br />
+          多视角选出最适合你的产品决策
         </p>
       </div>
 
@@ -78,7 +88,7 @@
 
       <!-- 步骤1: 原理科普卡 -->
       <transition name="fade-up">
-        <div class="content-section" v-if="currentStep === 'knowledge' || currentStep === 'budget' || currentStep === 'blogger' || currentStep === 'debate'">
+        <div class="content-section" v-if="currentStep === 'knowledge' || currentStep === 'mode' || currentStep === 'blogger' || currentStep === 'debate' || currentStep === 'result'">
           <div class="section-header">
             <span class="step-number">01</span>
             <h3>肤质原理科普</h3>
@@ -107,7 +117,7 @@
 
       <!-- 步骤2: 预算范围 -->
       <transition name="fade-up">
-        <div class="content-section" v-if="currentStep === 'budget' || currentStep === 'blogger' || currentStep === 'debate'">
+        <div class="content-section" v-if="currentStep === 'mode' || currentStep === 'blogger' || currentStep === 'debate' || currentStep === 'result'">
           <div class="section-header">
             <span class="step-number">02</span>
             <h3>预算范围</h3>
@@ -153,7 +163,7 @@
 
       <!-- 步骤3: 肤质选择 -->
       <transition name="fade-up">
-        <div class="content-section" v-if="currentStep === 'blogger' || currentStep === 'debate'">
+        <div class="content-section" v-if="currentStep === 'mode' || currentStep === 'blogger' || currentStep === 'debate' || currentStep === 'result'">
           <div class="section-header">
             <span class="step-number">03</span>
             <h3>肤质类型</h3>
@@ -188,13 +198,65 @@
         </div>
       </transition>
 
-      <!-- 步骤4: 博主聚焦 -->
+      <!-- 步骤4: 模式选择 -->
+      <transition name="fade-up">
+        <div class="content-section mode-section" v-if="currentStep === 'mode' || currentStep === 'blogger' || currentStep === 'debate' || currentStep === 'result'">
+          <div class="section-header">
+            <span class="step-number">04</span>
+            <h3>选择体验模式</h3>
+          </div>
+          
+          <div class="mode-cards">
+            <!-- 极速模式 -->
+            <div class="mode-card fast" :class="{ selected: selectedMode === 'fast' }" @click="selectMode('fast')">
+              <div class="mode-icon">⚡</div>
+              <h4>极速模式</h4>
+              <p class="mode-desc">十秒内为你生成适合的产品信息</p>
+              <div class="mode-features">
+                <span class="feature-tag">AI直接推荐</span>
+                <span class="feature-tag">快速决策</span>
+              </div>
+              <div v-if="selectedMode === 'fast'" class="selected-indicator">✓</div>
+            </div>
+
+            <!-- 直播间模式 -->
+            <div class="mode-card live" :class="{ selected: selectedMode === 'live' }" @click="selectMode('live')">
+              <div class="mode-icon">🎙️</div>
+              <h4>直播间模式</h4>
+              <p class="mode-desc">参与多博主辩论，决策你的专属产品</p>
+              <div class="mode-features">
+                <span class="feature-tag">多博主辩论</span>
+                <span class="feature-tag">多视角决策</span>
+              </div>
+              <div v-if="selectedMode === 'live'" class="selected-indicator">✓</div>
+            </div>
+          </div>
+
+          <button 
+            class="confirm-mode-btn"
+            :disabled="!selectedMode"
+            @click="confirmMode"
+          >
+            {{ selectedMode === 'fast' ? '立即获取推荐' : '进入直播间' }}
+            <span class="arrow">→</span>
+          </button>
+        </div>
+      </transition>
+
+      <!-- 步骤5: 博主选择（仅直播间模式） -->
       <transition name="fade-up">
         <div class="content-section" v-if="currentStep === 'blogger' || currentStep === 'debate'">
           <div class="section-header">
-            <span class="step-number">04</span>
+            <span class="step-number">05</span>
             <h3>选择博主</h3>
-            <p class="section-desc">请挑选 3 位进入辩论直播间</p>
+          </div>
+          
+          <div class="blogger-filter-notice">
+            <div class="notice-icon">🎯</div>
+            <div class="notice-content">
+              <div class="notice-title">针对你的信息，我为你筛选出了5个垂类博主分身</div>
+              <p class="notice-desc">这些博主在{{ skinTypeLabels[selectedSkinType] }}护肤领域有丰富经验</p>
+            </div>
           </div>
           
           <div class="selected-count">
@@ -203,7 +265,7 @@
           
           <div class="bloggers-grid">
             <div 
-              v-for="blogger in bloggers" 
+              v-for="blogger in filteredBloggers" 
               :key="blogger.id"
               class="blogger-card"
               :class="{ selected: selectedBloggers.includes(blogger.id) }"
@@ -232,11 +294,11 @@
         </div>
       </transition>
 
-      <!-- 步骤5: 辩论直播 -->
+      <!-- 步骤6: 辩论直播 -->
       <transition name="fade-up">
         <div class="content-section debate-section" v-if="currentStep === 'debate'">
           <div class="section-header">
-            <span class="step-number">05</span>
+            <span class="step-number">06</span>
             <h3>博主辩论</h3>
           </div>
           
@@ -292,17 +354,29 @@
         </div>
       </transition>
 
-      <!-- 步骤6: 推荐结果 -->
+      <!-- 步骤7: 推荐结果 -->
       <transition name="fade-up">
         <div class="content-section result-section" v-if="currentStep === 'result'">
           <div class="section-header">
-            <span class="step-number">06</span>
+            <span class="step-number">07</span>
             <h3>推荐结果</h3>
           </div>
           
-          <div v-if="recommendation" class="result-card">
+          <div v-if="isLoadingRecommendation" class="loading-card">
+            <div class="loading-spinner"></div>
+            <p>AI正在为你挑选最适合的产品...</p>
+          </div>
+          
+          <div v-else-if="recommendation" class="result-card">
             <div class="success-badge">✓</div>
-            <h4>为您挑到宝啦！</h4>
+            <h4>为你挑到宝啦！</h4>
+            
+            <div class="recommendation-source" v-if="recommendation.mode === 'fast'">
+              <span class="source-tag">⚡ 极速推荐</span>
+            </div>
+            <div class="recommendation-source" v-else>
+              <span class="source-tag">🎙️ 博主共识</span>
+            </div>
             
             <div class="product-showcase">
               <img :src="recommendation.primary.image" :alt="recommendation.primary.name" />
@@ -320,7 +394,7 @@
               </div>
               
               <div class="consensus-box">
-                <div class="consensus-label">辩论达成共识</div>
+                <div class="consensus-label">{{ recommendation.mode === 'fast' ? 'AI推荐依据' : '辩论达成共识' }}</div>
                 <p>{{ recommendation.primary.reason }}</p>
               </div>
             </div>
@@ -357,7 +431,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick, watch } from 'vue'
+import { ref, nextTick, watch, computed } from 'vue'
 import { BLOGGERS } from './agent/bloggers.js'
 import { apiClient } from './agent/api-client.js'
 
@@ -367,10 +441,12 @@ const userInput = ref('')
 const userQuestion = ref('')
 const isAnalyzing = ref(false)
 const isLoadingKnowledge = ref(false)
+const isLoadingRecommendation = ref(false)
 const knowledgeData = ref(null)
 const budgetRange = ref(500)
 const selectedSkinType = ref('oily')
 const selectedSkinCard = ref('A')
+const selectedMode = ref('')
 const selectedBloggers = ref([])
 const debateMessages = ref([])
 const userComment = ref('')
@@ -398,6 +474,13 @@ const skinTypes = [
   { id: 'sensitive', name: '敏感', icon: '🌸' }
 ]
 
+const skinTypeLabels = {
+  oily: '油性肌肤',
+  dry: '干性肌肤',
+  mixed: '混合肌肤',
+  sensitive: '敏感肌肤'
+}
+
 const skinCards = [
   { id: 'A', title: '控油祛痘', desc: '针对油痘肌，快速见效', color: 'emerald' },
   { id: 'B', title: '温和修护', desc: '屏障修复，维稳为主', color: 'orange' },
@@ -405,6 +488,12 @@ const skinCards = [
 ]
 
 const bloggers = BLOGGERS
+
+// 根据肤质筛选博主（模拟筛选逻辑）
+const filteredBloggers = computed(() => {
+  // 返回前5个博主作为筛选结果
+  return bloggers.slice(0, 5)
+})
 
 // 方法
 const quickInput = (tag) => {
@@ -450,9 +539,9 @@ const startAnalysis = async () => {
     scrollToContent()
   }, 800)
   
-  // 延迟显示博主选择
+  // 延迟显示肤质选择
   setTimeout(() => {
-    currentStep.value = 'blogger'
+    currentStep.value = 'mode'
     scrollToContent()
   }, 1600)
   
@@ -474,6 +563,45 @@ const scrollToBottom = async () => {
 
 const selectSkinCard = (id) => {
   selectedSkinCard.value = id
+}
+
+const selectMode = (mode) => {
+  selectedMode.value = mode
+}
+
+const confirmMode = async () => {
+  if (selectedMode.value === 'fast') {
+    // 极速模式：直接获取推荐
+    currentStep.value = 'result'
+    await nextTick()
+    scrollToContent()
+    
+    isLoadingRecommendation.value = true
+    try {
+      const result = await apiClient.generateRecommendation([], userQuestion.value)
+      result.mode = 'fast'
+      recommendation.value = result
+    } catch (error) {
+      console.error('Fast recommendation error:', error)
+      recommendation.value = {
+        mode: 'fast',
+        primary: {
+          id: 'P001',
+          name: '理肤泉B5修复霜',
+          brand: '理肤泉',
+          price: 89,
+          image: 'https://via.placeholder.com/300x300/FF9A9E/FFFFFF?text=La+Roche-Posay',
+          reason: '根据您的肌肤问题和预算，这款修复霜含有高浓度维生素B5，能够有效舒缓肌肤，修复屏障。十秒极速推荐完成！'
+        }
+      }
+    }
+    isLoadingRecommendation.value = false
+  } else {
+    // 直播间模式：进入博主选择
+    currentStep.value = 'blogger'
+    await nextTick()
+    scrollToContent()
+  }
 }
 
 const toggleBlogger = (id) => {
@@ -618,25 +746,32 @@ const showResult = async () => {
   await nextTick()
   scrollToContent()
   
+  isLoadingRecommendation.value = true
+  
   try {
-    recommendation.value = await apiClient.generateRecommendation(
+    const result = await apiClient.generateRecommendation(
       selectedBloggers.value,
       userQuestion.value
     )
+    result.mode = 'live'
+    recommendation.value = result
   } catch (error) {
     console.error('Failed to generate recommendation:', error)
     // 使用默认推荐
     recommendation.value = {
+      mode: 'live',
       primary: {
         id: 'P001',
         name: '理肤泉B5修复霜',
         brand: '理肤泉',
         price: 89,
         image: 'https://via.placeholder.com/300x300/FF9A9E/FFFFFF?text=La+Roche-Posay',
-        reason: '针对您的肌肤问题，这款修复霜含有高浓度维生素B5，能够有效舒缓肌肤，修复屏障。'
+        reason: '经过三位博主的激烈辩论，一致认为这款修复霜最适合解决您的肌肤问题。'
       }
     }
   }
+  
+  isLoadingRecommendation.value = false
 }
 
 const goToProduct = () => {
@@ -651,6 +786,7 @@ const restart = () => {
   budgetRange.value = 500
   selectedSkinType.value = 'oily'
   selectedSkinCard.value = 'A'
+  selectedMode.value = ''
   selectedBloggers.value = []
   debateMessages.value = []
   userComment.value = ''
@@ -669,19 +805,65 @@ watch(debateMessages, () => {
   background: linear-gradient(180deg, #FDF4FF 0%, #FFF5F5 100%);
 }
 
+/* 悬浮博主照片墙 */
+.floating-avatars {
+  position: absolute;
+  top: 80px;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  padding: 10px 0;
+}
+
+.avatar-scroll {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+}
+
+.avatar-track {
+  display: flex;
+  gap: 12px;
+  animation: scroll 20s linear infinite;
+  width: max-content;
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.float-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.avatar-hint {
+  text-align: center;
+  font-size: 12px;
+  color: #FF8E9E;
+  margin-top: 8px;
+  font-weight: 600;
+}
+
 /* 首屏样式 */
 .hero-section {
   min-height: 100vh;
   padding: 20px;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 100px;
 }
 
 .logo {
@@ -743,23 +925,23 @@ watch(debateMessages, () => {
 }
 
 .title {
-  font-size: 36px;
+  font-size: 48px;
   font-weight: 900;
   color: #2D3436;
-  line-height: 1.2;
+  line-height: 1.1;
   margin-bottom: 16px;
 }
 
 .gradient-text {
-  color: #58CC02;
-  border-bottom: 4px solid rgba(88, 204, 2, 0.2);
+  color: #FF8E9E;
+  border-bottom: 4px solid rgba(255, 142, 158, 0.3);
 }
 
 .subtitle {
   font-size: 14px;
   color: #636E72;
   font-weight: 600;
-  line-height: 1.6;
+  line-height: 1.8;
 }
 
 /* 相机入口 */
@@ -1243,6 +1425,160 @@ watch(debateMessages, () => {
   color: #636E72;
 }
 
+/* 模式选择 */
+.mode-section {
+  margin-bottom: 30px;
+}
+
+.mode-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.mode-card {
+  background: white;
+  padding: 28px 20px;
+  border-radius: 24px;
+  text-align: center;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.mode-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+.mode-card.selected {
+  border-color: #FFDE59;
+  box-shadow: 0 0 0 4px rgba(255, 222, 89, 0.2);
+}
+
+.mode-card.fast {
+  background: linear-gradient(135deg, #fff 0%, #f0fdf4 100%);
+}
+
+.mode-card.live {
+  background: linear-gradient(135deg, #fff 0%, #fdf4ff 100%);
+}
+
+.mode-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.mode-card h4 {
+  font-size: 18px;
+  font-weight: 800;
+  color: #2D3436;
+  margin-bottom: 8px;
+}
+
+.mode-desc {
+  font-size: 13px;
+  color: #636E72;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.mode-features {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.feature-tag {
+  padding: 6px 12px;
+  background: rgba(255, 142, 158, 0.1);
+  color: #FF8E9E;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.selected-indicator {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  background: #FFDE59;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 900;
+  color: #2D3436;
+}
+
+.confirm-mode-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 18px;
+  background: #2D3436;
+  color: white;
+  border: none;
+  border-radius: 28px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+  transition: all 0.1s;
+}
+
+.confirm-mode-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.confirm-mode-btn:not(:disabled):hover {
+  background: #000;
+}
+
+.confirm-mode-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* 博主筛选提示 */
+.blogger-filter-notice {
+  background: linear-gradient(135deg, #EBF5FF 0%, #F0F9FF 100%);
+  padding: 20px;
+  border-radius: 20px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  border: 2px solid rgba(0, 102, 204, 0.1);
+}
+
+.notice-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.notice-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #2D3436;
+  margin-bottom: 4px;
+}
+
+.notice-desc {
+  font-size: 13px;
+  color: #636E72;
+}
+
 /* 博主选择 */
 .selected-count {
   text-align: right;
@@ -1570,7 +1906,21 @@ watch(debateMessages, () => {
   font-size: 24px;
   font-weight: 900;
   color: #2D3436;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
+}
+
+.recommendation-source {
+  margin-bottom: 16px;
+}
+
+.source-tag {
+  display: inline-block;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #FF9A9E, #FAD0C4);
+  color: white;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .product-showcase {
@@ -1780,7 +2130,11 @@ watch(debateMessages, () => {
 /* 响应式 */
 @media (max-width: 480px) {
   .title {
-    font-size: 28px;
+    font-size: 36px;
+  }
+  
+  .mode-cards {
+    grid-template-columns: 1fr;
   }
   
   .bloggers-grid {
@@ -1789,6 +2143,15 @@ watch(debateMessages, () => {
   
   .skin-cards {
     grid-template-columns: 1fr;
+  }
+  
+  .floating-avatars {
+    top: 70px;
+  }
+  
+  .float-avatar {
+    width: 44px;
+    height: 44px;
   }
 }
 </style>
